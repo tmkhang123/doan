@@ -1,4 +1,4 @@
-﻿#include <iomanip>
+
 void LuuVaoFile(const string& tenFile, const DSLTC& dsltc) {
     ofstream file(tenFile);
     if (!file.is_open()) {
@@ -31,77 +31,36 @@ void LuuVaoFile(const string& tenFile, const DSLTC& dsltc) {
     file.close();
     cout << "Luu danh sach lop tin chi vao file " << tenFile << " thanh cong." << endl;
 }
-
-void veBang(int x, int y, int soCot, int chieuRongCot[], int soDong) {
-    // Vẽ hàng đầu
-    gotoxy(x, y);
-    cout << char(201); // Góc trên trái
-    for (int i = 0; i < soCot; i++) {
-        for (int j = 0; j < chieuRongCot[i]; j++) cout << char(205); // Đường ngang
-        if (i < soCot - 1) cout << char(203); // Giao giữa các cột
-    }
-    cout << char(187); // Góc trên phải
-
-    // Vẽ các dòng dữ liệu
-    for (int i = 1; i <= soDong; i++) {
-        gotoxy(x, y + i);
-        cout << char(186); // Cột trái
-        for (int j = 0; j < soCot; j++) {
-            gotoxy(x + 1 + chieuRongCot[j] * j, y + i);
-            cout << string(chieuRongCot[j], ' '); // Không gian dữ liệu
-            cout << char(186); // Giao giữa các cột
-        }
-    }
-
-    // Vẽ hàng cuối
-    gotoxy(x, y + soDong + 1);
-    cout << char(200); // Góc dưới trái
-    for (int i = 0; i < soCot; i++) {
-        for (int j = 0; j < chieuRongCot[i]; j++) cout << char(205); // Đường ngang
-        if (i < soCot - 1) cout << char(202); // Giao giữa các cột
-    }
-    cout << char(188); // Góc dưới phải
-}
 void HienThiDanhSachLopTinChi(const DSLTC& dsltc, PTRMH root) {
-    ifstream file("DSLTC.txt");
-    if (!file.is_open()) {
-        cout << "Khong mo duoc file DSLTC.txt" << endl;
+    if (dsltc.n == 0) {
+        cout << "Khong co lop tin chi nao." << endl;
         return;
     }
 
-    // Định nghĩa độ rộng của các cột
-    int chieuRongCot[] = { 12, 15, 8, 8, 10, 10, 12, 10 };
-    int soCot = sizeof(chieuRongCot) / sizeof(chieuRongCot[0]);
+    cout << "Danh sach lop tin chi hien co:" << endl;
+    for (int i = 0; i < dsltc.n; ++i) {
+        // Sử dụng hàm timKiemMonHoc để lấy tên môn học
+        PTRMH mhNode = timKiemMonHoc(root, dsltc.nodes[i]->MaMH);
+        string tenMH;
+        if (mhNode != nullptr) {
+            tenMH = mhNode->mh.TenMH;
+        }
+        else {
+            tenMH = "Khong tim thay";
+        }
 
-    // Vẽ bảng với tiêu đề
-    veBang(5, 2, soCot, chieuRongCot, 10); // 10 dòng ví dụ
-
-    // In tiêu đề cột
-    gotoxy(6, 3); cout << "Ma MH";
-    gotoxy(18, 3); cout << "Nien Khoa";
-    gotoxy(34, 3); cout << "Hoc Ky";
-    gotoxy(44, 3); cout << "Nhom";
-    gotoxy(54, 3); cout << "SV Min";
-    gotoxy(66, 3); cout << "SV Max";
-    gotoxy(78, 3); cout << "Trang Thai";
-    gotoxy(92, 3); cout << "ID Lop";
-
-    string maMH, nienKhoa;
-    int hocKy, nhom, svMin, svMax, trangThai, idLop;
-
-    int y = 4; // Vị trí bắt đầu in dữ liệu
-    while (file >> maMH >> nienKhoa >> hocKy >> nhom >> svMin >> svMax >> trangThai >> idLop) {
-        gotoxy(6, y); cout << setw(10) << left << maMH;
-        gotoxy(18, y); cout << setw(12) << left << nienKhoa;
-        gotoxy(34, y); cout << setw(8) << left << hocKy;
-        gotoxy(44, y); cout << setw(8) << left << nhom;
-        gotoxy(54, y); cout << setw(10) << left << svMin;
-        gotoxy(66, y); cout << setw(10) << left << svMax;
-        gotoxy(78, y); cout << setw(12) << left << trangThai;
-        gotoxy(92, y); cout << setw(10) << left << idLop;
-        y++;
+        // Hiển thị thông tin chi tiết của từng lớp tín chỉ
+        cout << "Ma Lop TC: " << dsltc.nodes[i]->MaLopTC << endl;
+        cout << "Ma MH: " << dsltc.nodes[i]->MaMH << endl;
+        cout << "Ten MH: " << tenMH << endl;
+        cout << "Nien khoa: " << dsltc.nodes[i]->NienKhoa << endl;
+        cout << "Hoc ky: " << dsltc.nodes[i]->HocKy << endl;
+        cout << "Nhom: " << dsltc.nodes[i]->Nhom << endl;
+        cout << "So SV toi thieu: " << dsltc.nodes[i]->SoSVMin << endl;
+        cout << "So SV toi da: " << dsltc.nodes[i]->SoSVMax << endl;
+        cout << "Trang thai: " << (dsltc.nodes[i]->TrangThaiLTC == 1 ? "Mo" : "Huy") << endl;
+        cout << "-----------------------------" << endl;
     }
-    file.close();
 }
 void InDanhSachLopTinChi(const DSLTC& dsltc, PTRMH root, const string& nienKhoa, int hocKy) {
 
